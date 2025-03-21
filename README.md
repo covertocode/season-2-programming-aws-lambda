@@ -1,4 +1,4 @@
-# Seasaon 2: Programming AWS Lambda
+# Season 2: Programming AWS Lambda
 
 1. Use the CloudFormation template to create a server: [lab-server-cloudformation.yml](./lab-server-cloudformation.yml)
 1. Connect to the server (Details coming soon!)
