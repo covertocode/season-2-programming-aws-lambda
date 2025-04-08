@@ -10,7 +10,7 @@ Description: >
 
 Globals:
   Function:
-    Runtime: python3.12
+    Runtime: python3.10
     Timeout: 30
     MemorySize: 128
     Architectures:
@@ -99,7 +99,7 @@ Outputs:
 
   StagingURL:
     Description: The URL for the staging environment
-    Value: !GetAtt StagingFunction.FunctionUrl
+    Value: !GetAtt StagingFunction.FunctionUrlConfig.FunctionUrl
 
   ProductionFunctionName:
     Description: The name of the Lambda function for the production environment
@@ -107,7 +107,7 @@ Outputs:
 
   ProductionURL:
     Description: The URL for the production environment
-    Value: !GetAtt ProductionFunction.FunctionUrl
+    Value: !GetAtt ProductionFunction.FunctionUrlConfig.FunctionUrl
 
   AwsDefaultRegion:
     Description: The AWS_DEFAULT_REGION where the stack is deployed
