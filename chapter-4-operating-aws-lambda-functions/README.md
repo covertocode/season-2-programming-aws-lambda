@@ -10,9 +10,10 @@ This is a simple AWS SAM application that creates two Lambda functions (staging 
 
 ## Installation
 
-1. Install the AWS SAM CLI:
+1. Install the AWS CLI and the AWS SAM CLI:
 
 ```bash
+# macOS
 brew install aws-sam-cli
 ```
 
@@ -31,7 +32,7 @@ To deploy the application:
 sam build
 
 # Deploy the application
-sam deploy --guided
+sam deploy --guided --capabilities CAPABILITY_NAMED_IAM
 ```
 
 The `--guided` flag will walk you through the deployment process, asking for:
@@ -42,21 +43,38 @@ The `--guided` flag will walk you through the deployment process, asking for:
 - Allow SAM CLI IAM role creation
 - Save arguments to configuration file
 
-## Testing Locally
+Sample responses to the `--guided` prompts:
 
-You can test the application locally using:
+```
+	Setting default arguments for 'sam deploy'
+	=========================================
+	Stack Name [sam-app]: python-ssm-parameters-v2
+	AWS Region [us-west-2]:
+	#Shows you resources changes to be deployed and require a 'Y' to initiate deploy
+	Confirm changes before deploy [y/N]:
+	#SAM needs permission to be able to create roles to connect to the resources in your template
+	Allow SAM CLI IAM role creation [Y/n]:
+	#Preserves the state of previously provisioned resources when an operation fails
+	Disable rollback [y/N]: y
+	StagingFunction Function Url has no authentication. Is this okay? [y/N]: y
+	ProductionFunction Function Url has no authentication. Is this okay? [y/N]: y
+	Save arguments to configuration file [Y/n]:
+	SAM configuration file [samconfig.toml]:
+	SAM configuration environment [default]:
+```
+If you make changes to the code, you can redeploy with:
 
-```bash
-sam local invoke StagingFunction
-sam local invoke ProductionFunction
+```
+sam build
+sam deploy
 ```
 
 ## Accessing the Function URLs
 
 After deployment, you can find the function URLs in the CloudFormation stack outputs:
 
-- Staging URL
-- Production URL
+- StagingFunctionUrl
+- ProductionFunctionUrl
 
 ## Cleanup
 
