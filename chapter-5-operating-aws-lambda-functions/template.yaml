@@ -97,18 +97,6 @@ Outputs:
     Description: The name of the Lambda function for the staging environment
     Value: !Ref StagingFunction
 
-  StagingURL:
-    Description: The URL for the staging environment
-    Value: !GetAtt StagingFunction.FunctionUrlConfig.FunctionUrl
-
   ProductionFunctionName:
     Description: The name of the Lambda function for the production environment
     Value: !Ref ProductionFunction
-
-  ProductionURL:
-    Description: The URL for the production environment
-    Value: !GetAtt ProductionFunction.FunctionUrlConfig.FunctionUrl
-
-  AwsDefaultRegion:
-    Description: The AWS_DEFAULT_REGION where the stack is deployed
-    Value: !Sub ${AWS::Region}
