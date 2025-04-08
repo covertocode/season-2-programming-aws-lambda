@@ -97,6 +97,14 @@ Outputs:
     Description: The name of the Lambda function for the staging environment
     Value: !Ref StagingFunction
 
+  StagingFunctionUrl:
+    Description: The Function URL of the staging Lambda function
+    Value: !GetAtt StagingFunctionUrl.FunctionUrl
+
   ProductionFunctionName:
     Description: The name of the Lambda function for the production environment
     Value: !Ref ProductionFunction
+
+  ProductionFunctionUrl:
+    Description: The Function URL of the production Lambda function
+    Value: !GetAtt ProductionFunctionUrl.FunctionUrl
