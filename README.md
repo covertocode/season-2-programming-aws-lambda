@@ -32,5 +32,5 @@
 
 <!-- FooterStart -->
 ---
-[hello-world-java21 →](chapter-2-getting-started-with-aws-lambda/README.md)
+[Chapter 2: Hello World Java 21 →](chapter-2-getting-started-with-aws-lambda/README.md)
 <!-- FooterEnd -->
