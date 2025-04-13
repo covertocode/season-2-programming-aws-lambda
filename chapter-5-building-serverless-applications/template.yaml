@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: chapter5-api-python
+
+Globals:
+  Function:
+    Runtime: python3.12
+    MemorySize: 512
+    Timeout: 25
+    Environment:
+      Variables:
+        LOCATIONS_TABLE: !Ref LocationsTable
+  Api:
+    OpenApiVersion: '3.0.1'
+
+Resources:
+  LocationsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: locationName
+        Type: String
+
+  WeatherEventLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: weather_event_lambda.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /events
+            Method: POST
+
+  WeatherQueryLambda:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: src/
+      Handler: weather_query_lambda.handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref LocationsTable
+      Events:
+        ApiEvents:
+          Type: Api
+          Properties:
+            Path: /locations
+            Method: GET
+
+Outputs:
+  DynamoDBTable:
+    Description: "DynamoDB Table Name"
+    Value: !Ref LocationsTable
+
+  ApiEndpoint:
+    Description: "API Gateway"
+    Value: !Ref ServerlessRestApi
+
+  WeatherEventEndpoint:
+    Description: "Weather Event API endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/events"
+
+  WeatherQueryEndpoint:
+    Description: "Weather Query API endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/locations"
