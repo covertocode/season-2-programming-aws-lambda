@@ -32,5 +32,5 @@
 
 <!-- FooterStart -->
 ---
-[Chapter 4: Deploy Functions that use the Lambda Environment →](chapter-4-operating-aws-lambda-functions/README.md)
+[hello-world-java21 →](chapter-2-getting-started-with-aws-lambda/README.md)
 <!-- FooterEnd -->

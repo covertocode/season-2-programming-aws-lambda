@@ -88,5 +88,5 @@ sam delete
 
 <!-- FooterStart -->
 ---
-[← Season 2: Programming AWS Lambda](../README.md) | [Chapter 5: Deploy a Mutli-Function API →](../chapter-5-api/README.md)
+[← hello-world-java21](../chapter-2-getting-started-with-aws-lambda/README.md) | [Chapter 5: Deploy a Mutli-Function API →](../chapter-5-api/README.md)
 <!-- FooterEnd -->
