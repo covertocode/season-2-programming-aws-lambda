@@ -16,6 +16,7 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     try:
         weather_data = json.loads(event['body'])
         weather_event = WeatherEvent(
+            # NOTE: Original code uses 'locationName'
             location_name=weather_data['location_name'],
             temperature=float(weather_data['temperature']),
             timestamp=int(weather_data['timestamp']),
