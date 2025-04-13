@@ -1,0 +1,9 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "python-ssm-parameters-v2"
+resolve_s3 = true
+s3_prefix = "python-ssm-parameters-v2"
+region = "us-west-2"
+capabilities = "CAPABILITY_NAMED_IAM"
+disable_rollback = true
+image_repositories = []

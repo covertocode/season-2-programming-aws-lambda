@@ -1,0 +1,118 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: "This SAM template creates the following resources for a sample application:\n\
+  \  1) Lambda function for the staging environment.\n  2) Lambda function for the\
+  \ production environment.\n  3) IAM role for Lambda execution.\n  4) Lambda function\
+  \ URLs for both environments.\n  5) SSM parameters for resource data.\n"
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 30
+    MemorySize: 128
+    Architectures:
+    - x86_64
+Resources:
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName:
+        Fn::Sub: ${AWS::StackName}-LambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+      - PolicyName: SSMParameterAccess
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ssm:GetParameter
+            Resource:
+            - Fn::Sub: arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/project/staging/resource_data
+            - Fn::Sub: arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/project/production/resource_data
+  StagingParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /project/staging/resource_data
+      Type: String
+      Value: STAGING_00
+      Description: Resource data for staging environment
+  ProductionParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Name: /project/production/resource_data
+      Type: String
+      Value: PRODUCTION_01
+      Description: Resource data for production environment
+  StagingFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-staging
+      CodeUri: StagingFunction
+      Handler: app.handler
+      Role:
+        Fn::GetAtt:
+        - LambdaExecutionRole
+        - Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: STAGING
+          VERSION: 0
+          PLATFORM: SAM
+          BUILD_NUMBER: 0
+          PARAMETER_NAME: /project/staging/resource_data
+      FunctionUrlConfig:
+        AuthType: NONE
+    Metadata:
+      SamResourceId: StagingFunction
+  ProductionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName:
+        Fn::Sub: ${AWS::StackName}-production
+      CodeUri: ProductionFunction
+      Handler: app.handler
+      Role:
+        Fn::GetAtt:
+        - LambdaExecutionRole
+        - Arn
+      Environment:
+        Variables:
+          ENVIRONMENT: PRODUCTION
+          VERSION: 0
+          PLATFORM: SAM
+          BUILD_NUMBER: 0
+          PARAMETER_NAME: /project/production/resource_data
+      FunctionUrlConfig:
+        AuthType: NONE
+    Metadata:
+      SamResourceId: ProductionFunction
+Outputs:
+  StagingFunctionName:
+    Description: The name of the Lambda function for the staging environment
+    Value:
+      Ref: StagingFunction
+  StagingFunctionUrl:
+    Description: The Function URL of the staging Lambda function
+    Value:
+      Fn::GetAtt:
+      - StagingFunctionUrl
+      - FunctionUrl
+  ProductionFunctionName:
+    Description: The name of the Lambda function for the production environment
+    Value:
+      Ref: ProductionFunction
+  ProductionFunctionUrl:
+    Description: The Function URL of the production Lambda function
+    Value:
+      Fn::GetAtt:
+      - ProductionFunctionUrl
+      - FunctionUrl
