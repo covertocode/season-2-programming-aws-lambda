@@ -1,6 +1,10 @@
 # Chapter 4: Deploy Functions that use the Lambda Environment
 
-This is a simple AWS SAM application that creates two Lambda functions (staging and production) with function URLs.  The functions interact with the Lambda Runtime Environment.
+This is a simple AWS SAM application that creates two Lambda functions (staging and production) with function URLs.  The functions interact with the Lambda Runtime Environment and AWS resources by:
+
+- Reading ENVIRONMENT_VARIABLES from AWS Lambda to use as parameters
+- Using the value of the parameters to access AWS Parameter Store
+- Reporting the parameter values in HTML output
 
 ## Prerequisites
 
