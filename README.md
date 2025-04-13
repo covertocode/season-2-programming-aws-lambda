@@ -29,3 +29,8 @@
    # Install the SAM CLI and Maven
    brew install aws-sam-cli maven maven-completion
    ```
+
+<!-- FooterStart -->
+---
+[Chapter 4: Deploy Functions that use the Lambda Environment →](chapter-4-operating-aws-lambda-functions/README.md)
+<!-- FooterEnd -->

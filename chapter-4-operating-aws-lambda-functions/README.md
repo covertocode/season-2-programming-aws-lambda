@@ -1,6 +1,6 @@
-# AWS SAM Application
+# Chapter 4: Deploy Functions that use the Lambda Environment
 
-This is a simple AWS SAM application that creates two Lambda functions (staging and production) with function URLs.
+This is a simple AWS SAM application that creates two Lambda functions (staging and production) with function URLs.  The functions interact with the Lambda Runtime Environment.
 
 ## Prerequisites
 
@@ -23,16 +23,16 @@ brew install aws-sam-cli
 aws configure
 ```
 
-## Deployment
+## Build and Deploy
 
-To deploy the application:
+To build and deploy the application:
 
 ```bash
 # Build the application
 sam build
 
 # Deploy the application
-sam deploy --guided --capabilities CAPABILITY_NAMED_IAM
+sam deploy --guided
 ```
 
 The `--guided` flag will walk you through the deployment process, asking for:
@@ -45,23 +45,21 @@ The `--guided` flag will walk you through the deployment process, asking for:
 
 Sample responses to the `--guided` prompts:
 
+```bash
+ Setting default arguments for 'sam deploy'
+ =========================================
+ Stack Name [sam-app]: python-ssm-parameters-v2
+ AWS Region [us-west-2]:
+ Confirm changes before deploy [y/N]:
+ Allow SAM CLI IAM role creation [Y/n]:
+ Disable rollback [y/N]: y
+ StagingFunction Function Url has no authentication. Is this okay? [y/N]: y
+ ProductionFunction Function Url has no authentication. Is this okay? [y/N]: y
+ Save arguments to configuration file [Y/n]:
+ SAM configuration file [samconfig.toml]:
+ SAM configuration environment [default]:
 ```
-	Setting default arguments for 'sam deploy'
-	=========================================
-	Stack Name [sam-app]: python-ssm-parameters-v2
-	AWS Region [us-west-2]:
-	#Shows you resources changes to be deployed and require a 'Y' to initiate deploy
-	Confirm changes before deploy [y/N]:
-	#SAM needs permission to be able to create roles to connect to the resources in your template
-	Allow SAM CLI IAM role creation [Y/n]:
-	#Preserves the state of previously provisioned resources when an operation fails
-	Disable rollback [y/N]: y
-	StagingFunction Function Url has no authentication. Is this okay? [y/N]: y
-	ProductionFunction Function Url has no authentication. Is this okay? [y/N]: y
-	Save arguments to configuration file [Y/n]:
-	SAM configuration file [samconfig.toml]:
-	SAM configuration environment [default]:
-```
+
 If you make changes to the code, you can redeploy with:
 
 ```
@@ -83,3 +81,8 @@ To delete the application and all its resources:
 ```bash
 sam delete
 ```
+
+<!-- FooterStart -->
+---
+[← Season 2: Programming AWS Lambda](../README.md) | [Chapter 5: Deploy a Mutli-Function API →](../chapter-5-api/README.md)
+<!-- FooterEnd -->
