@@ -1,4 +1,4 @@
-# Chapter 5 Part 1: Deploy a Mutli-Function API
+# Chapter 5: Deploy a Mutli-Function API
 
 Application consists of an API with:
 
