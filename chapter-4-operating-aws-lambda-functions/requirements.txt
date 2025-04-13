@@ -1,3 +1,0 @@
-# No external dependencies required for this project
-
-boto3>=1.26.0
