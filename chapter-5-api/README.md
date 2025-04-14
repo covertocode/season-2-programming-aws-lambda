@@ -76,11 +76,32 @@ Sample responses to the `--guided` prompts:
     curl -d '{"location_name":"Oxford, UK", "temperature":64, "timestamp":'"$(date +%s)"', "latitude": 51.75, "longitude": -1.25}' -H "Content-Type: application/json" -X POST "${APP_URL}/events"
     ```
 
+    **TIP:** Use the [`create-weather-data.py`](create-weather-data.py) script to generate random weather data for multiple locations.
+
+    ```bash
+    python3 create-weather-data.py
+    ```
+
 1. Read data from the DB using `curl` and the API's `/locations` route.
 
     ```bash
     curl "${APP_URL}/locations"
     ```
+
+   **TIP:** Pipe the output to `jq` for better readability.
+
+    ```bash
+    curl "${APP_URL}/locations" | jq
+    ```
+
+## Cleanup
+
+To delete the application and all its resources:
+
+```bash
+sam delete
+```
+
 
 <!-- FooterStart -->
 ---
