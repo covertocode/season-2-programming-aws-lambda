@@ -75,6 +75,8 @@ headers = {
     "Content-Type": "application/json"
 }
 
+print(f"Posting data for {len(locations)} locations to {app_url}...")
+
 for location_data in locations:
     temperature = random.randint(50, 85)
     timestamp = int(time.time())
@@ -98,9 +100,10 @@ for location_data in locations:
         conn.request("POST", path, body=encoded_data, headers=headers)
         response = conn.getresponse()
 
-        print(f"Data posted for {location_data['name']}")
-        print(f"Status: {response.status}, Reason: {response.reason}")
+        print(f"Status: {response.status}, Reason: {response.reason}", end=' ')
+
         response_data = response.read().decode('utf-8')
+
         if response_data:
             print(f"Response Data: {response_data}")
         conn.close()
