@@ -48,7 +48,7 @@ expected_map = {loc["name"]: loc for loc in expected_locations}
 # Verify each location from the API
 errors = []
 for actual_loc in actual_locations:
-    name = actual_loc["locationName"]
+    name = actual_loc["location_name"]
     if name not in expected_map:
         errors.append(f"Unexpected location in API: {name}")
         continue

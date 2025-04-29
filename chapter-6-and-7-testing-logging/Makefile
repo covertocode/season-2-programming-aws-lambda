@@ -4,8 +4,8 @@ $(TARGETS):
 	$(MAKE) -C src $@
 
 development-requirements:
-	pip install -U pip
-	pip install --requirement development-requirements.txt
+	pip install -q -U pip
+	pip install -q --requirement development-requirements.txt
 
 lint:
 	sam validate --lint
@@ -25,3 +25,6 @@ deploy:
 
 weather-data:
 	python3 ./create-weather-data.py
+
+functional-test:
+	./functional-test.sh
