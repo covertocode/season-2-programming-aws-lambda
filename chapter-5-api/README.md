@@ -65,15 +65,15 @@ Sample responses to the `--guided` prompts:
 1. After deploying the application, get the URL from the CloudFormation stack's output and save it to an environment variable.
 
     ```bash
-    export APP_URL="YOUR_URL_ENDPOINT"
+    export API_ENDPOINT="YOUR_URL_ENDPOINT"
     ```
 
 1. Write data to the DB using `curl` and the API's `/events` route.
 
     ```bash
-    curl -d '{"location_name":"Brooklyn, NY", "temperature":91, "timestamp":'"$(date +%s)"', "latitude": 40.70, "longitude": -73.99}' -H "Content-Type: application/json" -X POST "${APP_URL}/events"
+    curl -d '{"location_name":"Brooklyn, NY", "temperature":91, "timestamp":'"$(date +%s)"', "latitude": 40.70, "longitude": -73.99}' -H "Content-Type: application/json" -X POST "${API_ENDPOINT}/events"
 
-    curl -d '{"location_name":"Oxford, UK", "temperature":64, "timestamp":'"$(date +%s)"', "latitude": 51.75, "longitude": -1.25}' -H "Content-Type: application/json" -X POST "${APP_URL}/events"
+    curl -d '{"location_name":"Oxford, UK", "temperature":64, "timestamp":'"$(date +%s)"', "latitude": 51.75, "longitude": -1.25}' -H "Content-Type: application/json" -X POST "${API_ENDPOINT}/events"
     ```
 
     **TIP:** Use the [`create-weather-data.py`](create-weather-data.py) script to generate random weather data for multiple locations.
@@ -85,13 +85,13 @@ Sample responses to the `--guided` prompts:
 1. Read data from the DB using `curl` and the API's `/locations` route.
 
     ```bash
-    curl "${APP_URL}/locations"
+    curl "${API_ENDPOINT}/locations"
     ```
 
    **TIP:** Pipe the output to `jq` for better readability.
 
     ```bash
-    curl "${APP_URL}/locations" | jq
+    curl "${API_ENDPOINT}/locations" | jq
     ```
 
 ## Cleanup

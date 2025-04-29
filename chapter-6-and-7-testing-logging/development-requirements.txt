@@ -1,3 +1,6 @@
+pytest
+requests
+boto3
 black
 flake8
 pylint

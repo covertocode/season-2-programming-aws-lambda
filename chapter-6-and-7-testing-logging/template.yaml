@@ -12,6 +12,9 @@ Globals:
         LOCATIONS_TABLE: !Ref LocationsTable
   Api:
     OpenApiVersion: '3.0.1'
+    Stage:
+      - Prod
+      - Test
 
 Resources:
   LocationsTable:

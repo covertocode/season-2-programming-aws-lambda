@@ -5,15 +5,15 @@ import random
 import time
 import urllib.parse
 
-# You'll still need to set the APP_URL environment variable
-app_url = os.environ.get("APP_URL")
+# Get the API endpoint from environment variable
+API_ENDPOINT = os.getenv('API_ENDPOINT')
 
-if not app_url:
-    print("Error: APP_URL environment variable not set.")
+if not API_ENDPOINT:
+    print("Error: API_ENDPOINT environment variable not set.")
     exit(1)
 
 # Parse the URL to get host and path
-parsed_url = urllib.parse.urlparse(app_url)
+parsed_url = urllib.parse.urlparse(API_ENDPOINT)
 hostname = parsed_url.netloc
 path = parsed_url.path + "/events"
 
@@ -73,7 +73,7 @@ locations = [
 
 headers = {"Content-Type": "application/json"}
 
-print(f"Posting data for {len(locations)} locations to {app_url}...")
+print(f"Posting data for {len(locations)} locations to {API_ENDPOINT}...")
 
 for location_data in locations:
     temperature = random.randint(50, 85)
