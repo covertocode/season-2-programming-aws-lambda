@@ -28,3 +28,8 @@ weather-data:
 
 functional-test:
 	./functional-test.sh
+
+stacks:
+	aws cloudformation describe-stacks \
+		--query "Stacks[].{Name:StackName,Status:StackStatus}" \
+		--output=table
