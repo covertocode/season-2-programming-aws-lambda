@@ -64,7 +64,6 @@ for location_data in locations:
         else:
             conn = http.client.HTTPConnection(hostname)
 
-        print(f"# Posting data for {location_data['name']}...")
         conn.request("POST", path, body=encoded_data, headers=headers)
         response = conn.getresponse()
 
