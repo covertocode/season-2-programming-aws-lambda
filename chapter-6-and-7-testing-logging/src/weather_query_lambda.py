@@ -16,13 +16,17 @@ DEFAULT_LIMIT = 50
 
 
 def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
+    logger.info("Received weather query request")
     try:
         query_params = event.get("queryStringParameters", {}) or {}
-        limit = int(query_params.get("limit", DEFAULT_LIMIT))
+        logger.debug(f"Query parameters: {query_params}")
 
         response = table.scan(Limit=limit)
-        items = response["Items"]
 
+        items = response["Items"]
+        logger.info(f"Retrieved {len(items)} items from DynamoDB")
+
+        logger.debug("Converting DynamoDB items to WeatherEvent objects")
         weather_events = [
             WeatherEvent(
                 location_name=item["locationName"],
@@ -33,8 +37,10 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
             )
             for item in items
         ]
+        logger.debug(f"Created {len(weather_events)} WeatherEvent objects")
 
         # Convert WeatherEvent objects to dictionaries for JSON serialization
+        logger.debug("Converting WeatherEvent objects to dictionaries")
         weather_events_dict = [
             {
                 "location_name": event.location_name,
@@ -46,7 +52,20 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
             for event in weather_events
         ]
 
+        logger.info("Successfully processed query request")
         return {"statusCode": 200, "body": json.dumps(weather_events_dict)}
+    except KeyError as e:
+        logger.error(f"Missing required field in DynamoDB item: {str(e)}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Data integrity error: {str(e)}"}),
+        }
+    except ValueError as e:
+        logger.error(f"Invalid data type in DynamoDB item: {str(e)}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Data type error: {str(e)}"}),
+        }
     except Exception as e:
-        logger.exception("Error querying weather events")
+        logger.exception("Unexpected error querying weather events")
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
