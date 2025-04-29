@@ -69,7 +69,7 @@ for actual_loc in actual_locations:
             errors.append(f"Missing required field '{field}' for location {name}")
 
 # Check if any locations are missing from the API
-actual_names = {loc["locationName"] for loc in actual_locations}
+actual_names = {loc["location_name"] for loc in actual_locations}
 expected_names = {loc["name"] for loc in expected_locations}
 missing_locations = expected_names - actual_names
 if missing_locations:
