@@ -14,18 +14,6 @@ Globals:
     OpenApiVersion: '3.0.1'
 
 Resources:
-  ProductionApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: "production"
-      Description: "Production API"
-
-  TestingApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: "testing"
-      Description: "Production API"
-
   LocationsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
@@ -42,16 +30,9 @@ Resources:
         - DynamoDBCrudPolicy:
             TableName: !Ref LocationsTable
       Events:
-        ProductionEvents:
+        ApiEvents:
           Type: Api
           Properties:
-            RestApiId: !Ref ProductionApi
-            Path: /events
-            Method: POST
-        TestingEvents:
-          Type: Api
-          Properties:
-            RestApiId: !Ref TestingApi
             Path: /events
             Method: POST
 
@@ -64,16 +45,9 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref LocationsTable
       Events:
-        ProductionEvents:
+        ApiEvents:
           Type: Api
           Properties:
-            RestApiId: !Ref ProductionApi
-            Path: /locations
-            Method: GET
-        TestingEvents:
-          Type: Api
-          Properties:
-            RestApiId: !Ref TestingApi
             Path: /locations
             Method: GET
 
@@ -82,10 +56,14 @@ Outputs:
     Description: "DynamoDB Table Name"
     Value: !Ref LocationsTable
 
-  ProductionEndpoint:
-    Description: "Production API Gateway"
-    Value: !Sub "https://${ProductionApi}.execute-api.${AWS::Region}.amazonaws.com/production"
+  ApiEndpoint:
+    Description: "API ENDPOINT"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
 
-  TestingEndpoint:
-    Description: "Production API Gateway"
-    Value: !Sub "https://${TestingApi}.execute-api.${AWS::Region}.amazonaws.com/testing"
+  WeatherEventEndpoint:
+    Description: "Weather Event API endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/events"
+
+  WeatherQueryEndpoint:
+    Description: "Weather Query API endpoint"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/locations"
