@@ -9,7 +9,14 @@ development-requirements:
 
 lint:
 	sam validate --lint
+	python3 -m flake8 --ignore=E501,E231 *.py
+	python3 -m pylint --errors-only --disable=C0301 *.py
+	python3 -m black --diff .
+	python3 -m isort --diff .
 
+fmt:
+	python3 -m black .
+	python3 -m isort .
 build:
 	sam build
 

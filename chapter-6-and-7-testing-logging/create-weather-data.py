@@ -1,8 +1,8 @@
+import http.client
 import json
-import time
 import os
 import random
-import http.client
+import time
 import urllib.parse
 
 # You'll still need to set the APP_URL environment variable
@@ -71,9 +71,7 @@ locations = [
     {"name": "Vancouver, Canada", "latitude": 49.2827, "longitude": -123.1207},
 ]
 
-headers = {
-    "Content-Type": "application/json"
-}
+headers = {"Content-Type": "application/json"}
 
 print(f"Posting data for {len(locations)} locations to {app_url}...")
 
@@ -85,11 +83,11 @@ for location_data in locations:
         "temperature": temperature,
         "timestamp": timestamp,
         "latitude": location_data["latitude"],
-        "longitude": location_data["longitude"]
+        "longitude": location_data["longitude"],
     }
 
     json_data = json.dumps(data)
-    encoded_data = json_data.encode('utf-8')
+    encoded_data = json_data.encode("utf-8")
 
     try:
         if parsed_url.scheme == "https":
@@ -100,9 +98,9 @@ for location_data in locations:
         conn.request("POST", path, body=encoded_data, headers=headers)
         response = conn.getresponse()
 
-        print(f"Status: {response.status}, Reason: {response.reason}", end=' ')
+        print(f"Status: {response.status}, Reason: {response.reason}", end=" ")
 
-        response_data = response.read().decode('utf-8')
+        response_data = response.read().decode("utf-8")
 
         if response_data:
             print(f"Response Data: {response_data}")
