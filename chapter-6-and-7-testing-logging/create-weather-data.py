@@ -5,7 +5,6 @@ import os
 import random
 import time
 import urllib.parse
-import sys
 
 print("# Reading configuration...")
 # Get the API endpoint from environment variable
@@ -21,7 +20,7 @@ print(f"# Using weather data file: {WEATHER_DATA_FILE}")
 print("# Reading locations from JSON file...")
 # Read locations from JSON file
 try:
-    with open(WEATHER_DATA_FILE, 'r') as f:
+    with open(WEATHER_DATA_FILE, "r") as f:
         locations = json.load(f)
     print(f"# Successfully loaded {len(locations)} locations")
 except FileNotFoundError:
@@ -69,16 +68,16 @@ for location_data in locations:
         conn.request("POST", path, body=encoded_data, headers=headers)
         response = conn.getresponse()
 
+        print(f"Status: {response.status}, Reason: {response.reason}", end=" ")
+
         if response.status == 200:
             success_count += 1
-            print(f"# Success: {response.status} {response.reason}")
         else:
             error_count += 1
-            print(f"# Warning: {response.status} {response.reason}")
 
         response_data = response.read().decode("utf-8")
         if response_data:
-            print(f"# Response: {response_data}")
+            print(f" Response Data: {response_data}")
         conn.close()
 
     except Exception as e:
@@ -86,9 +85,9 @@ for location_data in locations:
         print(f"# Error posting data for {location_data['name']}: {e}")
     time.sleep(0.1)
 
-print(f"\n# Finished posting data for all locations.")
-print(f"#\tSuccessfully posted: {success_count} locations")
-print(f"#\tFailed to post: {error_count} locations")
+print("\n# Finished posting data for all locations.")
+print(f"#\tSuccess: {success_count} locations")
+print(f"#\tFailure: {error_count} locations")
 
 if error_count > 0:
     print("# Some locations failed to post. Check the logs for details.")

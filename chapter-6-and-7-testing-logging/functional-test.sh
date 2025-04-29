@@ -14,6 +14,7 @@ final_statement() {
     fi
 }
 
+# Step 0: Set up the test environment
 # Set the trap to execute the final statement on EXIT
 trap final_statement EXIT
 
@@ -22,22 +23,31 @@ STACK_NAME="functional-test-$(date +%Y%m%d%H%M%S)"
 
 echo "# $(date) Starting functional test with stack name: $STACK_NAME"
 
+echo
+echo
 echo "# $(date) Install requirements"
 make development-requirements
 
 # Step 1: Build and deploy the template
+echo
+echo
 echo "# $(date) Building and deploying the template..."
 sam build
 sam deploy --stack-name "$STACK_NAME" --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
 
 # Step 2: Get stack outputs
+echo
+echo
 echo "# $(date) Getting stack outputs..."
 API_ENDPOINT=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='$STACK_NAME'][].Outputs[?OutputKey=='ApiEndpoint'].OutputValue" --output text)
+
 export API_ENDPOINT
 
 echo "# $(date) API Endpoint: $API_ENDPOINT"
 
-# Step 4: Run the create-weather-data.py script
+# Step 3: Run the create-weather-data.py script
+echo
+echo
 echo "# $(date) Writing test data to the API..."
 python3 create-weather-data.py
 CREATE_WEATHER_DATA_RESULT=$?
@@ -46,7 +56,9 @@ if [ $CREATE_WEATHER_DATA_RESULT -ne 0 ]; then
     exit 1
 fi
 
-# Step 5: Run the verification script
+# Step 4: Run the verification script
+echo
+echo
 echo "# $(date) Running verification script..."
 python3 verify-weather-data.py
 VERIFICATION_RESULT=$?

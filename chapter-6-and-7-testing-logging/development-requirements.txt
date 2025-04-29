@@ -1,7 +1,6 @@
-pytest
 requests
-boto3
 black
 flake8
+flake8-pyproject
 pylint
 isort

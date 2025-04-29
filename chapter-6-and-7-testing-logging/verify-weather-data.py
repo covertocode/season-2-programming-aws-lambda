@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+
 import requests
 
 print("# Reading configuration...")
@@ -18,7 +19,7 @@ print(f"# Using weather data file: {WEATHER_DATA_FILE}")
 print("# Reading expected locations from JSON file...")
 # Read expected locations from JSON file
 try:
-    with open(WEATHER_DATA_FILE, 'r') as f:
+    with open(WEATHER_DATA_FILE, "r") as f:
         expected_locations = json.load(f)
     print(f"# Successfully loaded {len(expected_locations)} expected locations")
 except FileNotFoundError:
@@ -65,11 +66,16 @@ for actual_loc in actual_locations:
     expected_loc = expected_map[name]
 
     # Verify coordinates match (allowing for small floating point differences)
-    if not (abs(float(actual_loc["latitude"]) - float(expected_loc["latitude"])) < 0.01 and
-            abs(float(actual_loc["longitude"]) - float(expected_loc["longitude"])) < 0.01):
-        errors.append(f"Coordinates mismatch for {name}: "
-                     f"expected ({expected_loc['latitude']}, {expected_loc['longitude']}), "
-                     f"got ({actual_loc['latitude']}, {actual_loc['longitude']})")
+    if not (
+        abs(float(actual_loc["latitude"]) - float(expected_loc["latitude"])) < 0.01
+        and abs(float(actual_loc["longitude"]) - float(expected_loc["longitude"]))
+        < 0.01
+    ):
+        errors.append(
+            f"Coordinates mismatch for {name}: "
+            f"expected ({expected_loc['latitude']}, {expected_loc['longitude']}), "
+            f"got ({actual_loc['latitude']}, {actual_loc['longitude']})"
+        )
 
     # Verify required fields are present
     required_fields = ["temperature", "timestamp"]
