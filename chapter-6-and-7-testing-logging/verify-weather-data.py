@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-
 import json
 import os
 import sys
 import requests
 
+print("# Reading configuration...")
 # Get the API endpoint from environment variable
 API_ENDPOINT = os.getenv("API_ENDPOINT")
 if not API_ENDPOINT:
@@ -13,11 +13,14 @@ if not API_ENDPOINT:
 
 # Get the Weather Data file from environment variable or use default
 WEATHER_DATA_FILE = os.getenv("WEATHER_DATA_FILE", "weather_data.json")
+print(f"# Using weather data file: {WEATHER_DATA_FILE}")
 
+print("# Reading expected locations from JSON file...")
 # Read expected locations from JSON file
 try:
     with open(WEATHER_DATA_FILE, 'r') as f:
         expected_locations = json.load(f)
+    print(f"# Successfully loaded {len(expected_locations)} expected locations")
 except FileNotFoundError:
     print(f"Error: Weather data file '{WEATHER_DATA_FILE}' not found.")
     sys.exit(1)
@@ -25,6 +28,7 @@ except json.JSONDecodeError:
     print(f"Error: Invalid JSON in weather data file '{WEATHER_DATA_FILE}'.")
     sys.exit(1)
 
+print("# Fetching locations from API...")
 # Get locations from the API
 try:
     response = requests.get(f"{API_ENDPOINT}/locations")
@@ -33,6 +37,7 @@ try:
         sys.exit(1)
 
     actual_locations = response.json()
+    print(f"# Successfully retrieved {len(actual_locations)} locations from API")
 except requests.exceptions.RequestException as e:
     print(f"Error: Failed to connect to API: {e}")
     sys.exit(1)
@@ -42,13 +47,17 @@ if not actual_locations:
     print("Error: No locations returned from API")
     sys.exit(1)
 
+print("# Creating location lookup map...")
 # Create a map of expected locations by name for easier lookup
 expected_map = {loc["name"]: loc for loc in expected_locations}
 
+print("# Starting verification of locations...")
 # Verify each location from the API
 errors = []
 for actual_loc in actual_locations:
     name = actual_loc["location_name"]
+    print(f"# Verifying location: {name}")
+
     if name not in expected_map:
         errors.append(f"Unexpected location in API: {name}")
         continue
@@ -68,6 +77,7 @@ for actual_loc in actual_locations:
         if field not in actual_loc:
             errors.append(f"Missing required field '{field}' for location {name}")
 
+print("# Checking for missing locations...")
 # Check if any locations are missing from the API
 actual_names = {loc["location_name"] for loc in actual_locations}
 expected_names = {loc["name"] for loc in expected_locations}
@@ -77,10 +87,13 @@ if missing_locations:
 
 # Report results
 if errors:
-    print("\nVerification failed with the following errors:")
+    print("\n# Verification failed with the following errors:")
     for error in errors:
         print(f"- {error}")
     sys.exit(1)
 else:
-    print("All verifications passed successfully!")
-    print(f"Verified {len(actual_locations)} locations match the expected data.")
+    print("\n# All verifications passed successfully!")
+    print(f"# Verified {len(actual_locations)} locations match the expected data.")
+    print("# All coordinates match within tolerance")
+    print("# All required fields are present")
+    print("# No missing or unexpected locations found")

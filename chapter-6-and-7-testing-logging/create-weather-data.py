@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import http.client
 import json
 import os
@@ -6,21 +7,23 @@ import time
 import urllib.parse
 import sys
 
-
+print("# Reading configuration...")
 # Get the API endpoint from environment variable
 API_ENDPOINT = os.getenv("API_ENDPOINT")
-
 if not API_ENDPOINT:
     print("Error: API_ENDPOINT environment variable not set.")
     exit(1)
 
 # Get the Weather Data file from environment variable or use default
 WEATHER_DATA_FILE = os.getenv("WEATHER_DATA_FILE", "weather_data.json")
+print(f"# Using weather data file: {WEATHER_DATA_FILE}")
 
+print("# Reading locations from JSON file...")
 # Read locations from JSON file
 try:
     with open(WEATHER_DATA_FILE, 'r') as f:
         locations = json.load(f)
+    print(f"# Successfully loaded {len(locations)} locations")
 except FileNotFoundError:
     print(f"Error: Weather data file '{WEATHER_DATA_FILE}' not found.")
     exit(1)
@@ -28,14 +31,19 @@ except json.JSONDecodeError:
     print(f"Error: Invalid JSON in weather data file '{WEATHER_DATA_FILE}'.")
     exit(1)
 
+print("# Preparing API connection...")
 # Parse the URL to get host and path
 parsed_url = urllib.parse.urlparse(API_ENDPOINT)
 hostname = parsed_url.netloc
 path = parsed_url.path + "/events"
+print(f"# API Host: {hostname}")
+print(f"# API Path: {path}")
 
 headers = {"Content-Type": "application/json"}
 
-print(f"Posting data for {len(locations)} locations to {API_ENDPOINT}...")
+print(f"\n# Starting to post data for {len(locations)} locations...")
+success_count = 0
+error_count = 0
 
 for location_data in locations:
     temperature = random.randint(50, 85)
@@ -57,19 +65,31 @@ for location_data in locations:
         else:
             conn = http.client.HTTPConnection(hostname)
 
+        print(f"# Posting data for {location_data['name']}...")
         conn.request("POST", path, body=encoded_data, headers=headers)
         response = conn.getresponse()
 
-        print(f"Status: {response.status}, Reason: {response.reason}", end=" ")
+        if response.status == 200:
+            success_count += 1
+            print(f"# Success: {response.status} {response.reason}")
+        else:
+            error_count += 1
+            print(f"# Warning: {response.status} {response.reason}")
 
         response_data = response.read().decode("utf-8")
-
         if response_data:
-            print(f"Response Data: {response_data}")
+            print(f"# Response: {response_data}")
         conn.close()
 
     except Exception as e:
-        print(f"Error posting data for {location_data['name']}: {e}")
+        error_count += 1
+        print(f"# Error posting data for {location_data['name']}: {e}")
     time.sleep(0.1)
 
-print("Finished posting data for all locations.")
+print(f"\n# Finished posting data for all locations.")
+print(f"#\tSuccessfully posted: {success_count} locations")
+print(f"#\tFailed to post: {error_count} locations")
+
+if error_count > 0:
+    print("# Some locations failed to post. Check the logs for details.")
+    exit(1)
