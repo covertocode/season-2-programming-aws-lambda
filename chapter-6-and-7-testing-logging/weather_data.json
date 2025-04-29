@@ -45,11 +45,6 @@
         "longitude": -58.37
     },
     {
-        "name": "Buenos Aires, Argentina",
-        "latitude": -34.6037,
-        "longitude": -58.3816
-    },
-    {
         "name": "Cairo, Egypt",
         "latitude": 30.04,
         "longitude": 31.24
@@ -243,11 +238,6 @@
         "name": "Toronto, Canada",
         "latitude": 43.6532,
         "longitude": -79.3832
-    },
-    {
-        "name": "Vancouver, Canada",
-        "latitude": 49.28,
-        "longitude": -123.12
     },
     {
         "name": "Vancouver, Canada",
