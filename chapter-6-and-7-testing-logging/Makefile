@@ -22,3 +22,6 @@ build:
 
 deploy:
 	sam deploy --no-confirm-changeset
+
+weather-data:
+	python3 ./create-weather-data.py
