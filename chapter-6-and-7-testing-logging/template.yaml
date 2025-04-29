@@ -45,7 +45,7 @@ Resources:
         ProductionEvents:
           Type: Api
           Properties:
-            RestApiId: !Ref ProdApi
+            RestApiId: !Ref ProductionApi
             Path: /events
             Method: POST
         TestingEvents:
@@ -79,6 +79,6 @@ Outputs:
     Description: "Production API Gateway"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/production"
 
-TestingEndpoint:
+  TestingEndpoint:
     Description: "Production API Gateway"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/testing"

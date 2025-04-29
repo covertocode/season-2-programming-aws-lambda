@@ -6,7 +6,7 @@ import time
 import urllib.parse
 
 # Get the API endpoint from environment variable
-API_ENDPOINT = os.getenv('API_ENDPOINT')
+API_ENDPOINT = os.getenv("API_ENDPOINT")
 
 if not API_ENDPOINT:
     print("Error: API_ENDPOINT environment variable not set.")
