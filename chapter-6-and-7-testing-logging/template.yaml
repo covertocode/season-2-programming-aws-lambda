@@ -84,8 +84,8 @@ Outputs:
 
   ProductionEndpoint:
     Description: "Production API Gateway"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/production"
+    Value: !Sub "https://${ProductionApi}.execute-api.${AWS::Region}.amazonaws.com/production"
 
   TestingEndpoint:
     Description: "Production API Gateway"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/testing"
+    Value: !Sub "https://${TestingApi}.execute-api.${AWS::Region}.amazonaws.com/testing"
