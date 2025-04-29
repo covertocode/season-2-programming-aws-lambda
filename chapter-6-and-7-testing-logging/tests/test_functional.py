@@ -1,9 +1,9 @@
 import json
 import os
 from datetime import datetime
+import unittest
 
 import boto3
-import pytest
 import requests
 
 # Get the API endpoint from environment variable
@@ -18,41 +18,49 @@ dynamodb = boto3.resource("dynamodb")
 table_name = os.getenv("LOCATIONS_TABLE", "LocationsTable")
 
 
-def test_weather_event_lifecycle():
-    # Test data
-    test_location = {
-        "locationName": "TestLocation",
-        "temperature": 25.5,
-        "timestamp": datetime.now().isoformat(),
-        "humidity": 65,
-    }
+class TestWeatherEventLifecycle(unittest.TestCase):
+    def setUp(self):
+        """Set up test data before each test"""
+        self.test_location = {
+            "locationName": "TestLocation",
+            "temperature": 25.5,
+            "timestamp": datetime.now().isoformat(),
+            "humidity": 65,
+        }
+        self.table = dynamodb.Table(table_name)
 
-    # Step 1: Write data to the table via API
-    response = requests.post(f"{API_ENDPOINT}/events", json=test_location)
-    assert response.status_code == 200
+    def tearDown(self):
+        """Clean up test data after each test"""
+        try:
+            self.table.delete_item(Key={"locationName": self.test_location["locationName"]})
+        except Exception:
+            pass
 
-    # Step 2: Verify data was written to DynamoDB
-    table = dynamodb.Table(table_name)
-    response = table.get_item(Key={"locationName": test_location["locationName"]})
-    assert "Item" in response
-    stored_item = response["Item"]
+    def test_weather_event_lifecycle(self):
+        # Step 1: Write data to the table via API
+        response = requests.post(f"{API_ENDPOINT}/events", json=self.test_location)
+        self.assertEqual(response.status_code, 200)
 
-    # Verify the stored data matches what we sent
-    assert stored_item["locationName"] == test_location["locationName"]
-    assert float(stored_item["temperature"]) == test_location["temperature"]
-    assert stored_item["humidity"] == test_location["humidity"]
+        # Step 2: Verify data was written to DynamoDB
+        response = self.table.get_item(Key={"locationName": self.test_location["locationName"]})
+        self.assertIn("Item", response)
+        stored_item = response["Item"]
 
-    # Step 3: Query the data via API
-    query_response = requests.get(f"{API_ENDPOINT}/locations")
-    assert query_response.status_code == 200
-    locations = query_response.json()
-    assert any(
-        loc["locationName"] == test_location["locationName"] for loc in locations
-    )
+        # Verify the stored data matches what we sent
+        self.assertEqual(stored_item["locationName"], self.test_location["locationName"])
+        self.assertEqual(float(stored_item["temperature"]), self.test_location["temperature"])
+        self.assertEqual(stored_item["humidity"], self.test_location["humidity"])
 
-    # Step 4: Clean up - delete the test data
-    table.delete_item(Key={"locationName": test_location["locationName"]})
+        # Step 3: Query the data via API
+        query_response = requests.get(f"{API_ENDPOINT}/locations")
+        self.assertEqual(query_response.status_code, 200)
+        locations = query_response.json()
+        self.assertTrue(
+            any(loc["locationName"] == self.test_location["locationName"] for loc in locations)
+        )
 
-    # Verify the item was deleted
-    response = table.get_item(Key={"locationName": test_location["locationName"]})
-    assert "Item" not in response
+        # Step 4: Clean up is handled by tearDown method
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -64,9 +64,16 @@ Resources:
         - DynamoDBReadPolicy:
             TableName: !Ref LocationsTable
       Events:
-        ApiEvents:
+        ProductionEvents:
           Type: Api
           Properties:
+            RestApiId: !Ref ProductionApi
+            Path: /locations
+            Method: GET
+        TestingEvents:
+          Type: Api
+          Properties:
+            RestApiId: !Ref TestingApi
             Path: /locations
             Method: GET
 
