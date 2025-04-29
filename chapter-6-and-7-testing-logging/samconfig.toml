@@ -1,8 +1,8 @@
 version = 0.1
 [default.deploy.parameters]
-stack_name = "ch5-weather-api"
+stack_name = "chapter-6-and-7-testing-logging"
 resolve_s3 = true
-s3_prefix = "ch5-weather-api"
+s3_prefix = "chapter-6-and-7-testing-logging"
 region = "us-west-2"
 capabilities = "CAPABILITY_IAM"
 image_repositories = []
