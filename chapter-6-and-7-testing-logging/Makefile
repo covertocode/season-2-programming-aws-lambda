@@ -29,6 +29,9 @@ weather-data:
 functional-test:
 	./functional-test.sh
 
+logs:
+	sam logs --stack-name chapter-6-and-7-testing-logging
+
 stacks:
 	aws cloudformation describe-stacks \
 		--query "Stacks[].{Name:StackName,Status:StackStatus}" \
