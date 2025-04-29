@@ -77,9 +77,9 @@ class TestWeatherEventLambda(unittest.TestCase):
 
         response = event_handler(event, None)
 
-        self.assertEqual(response["statusCode"], 500)
+        self.assertEqual(response["statusCode"], 400)
         self.assertIn("error", json.loads(response["body"]))
-        self.mock_logger.exception.assert_called_once()
+        self.mock_logger.error.assert_called_once()
 
 
 class TestWeatherQueryLambda(unittest.TestCase):

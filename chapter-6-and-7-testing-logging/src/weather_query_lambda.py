@@ -21,6 +21,7 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
         query_params = event.get("queryStringParameters", {}) or {}
         logger.debug(f"Query parameters: {query_params}")
 
+        limit = int(query_params.get("limit", DEFAULT_LIMIT))
         response = table.scan(Limit=limit)
 
         items = response["Items"]
