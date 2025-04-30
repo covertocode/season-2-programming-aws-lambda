@@ -29,8 +29,8 @@ create-weather-data:
 verify-weather-data:
 	python3 ./verify-weather-data.py
 
-functional-test:
-	./functional-test.sh
+end-to-end:
+	./end-to-end-test.sh
 
 outputs:
 	@echo "SAM CLI outputs:"
