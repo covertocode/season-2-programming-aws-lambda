@@ -23,8 +23,11 @@ build:
 deploy:
 	sam deploy --no-confirm-changeset
 
-weather-data:
+create-weather-data:
 	python3 ./create-weather-data.py
+
+verify-weather-data:
+	python3 ./verify-weather-data.py
 
 functional-test:
 	./functional-test.sh
