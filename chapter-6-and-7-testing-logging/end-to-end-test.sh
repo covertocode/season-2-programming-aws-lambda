@@ -21,9 +21,9 @@ final_statement() {
 trap final_statement EXIT
 
 # Get current date for stack name
-STACK_NAME="functional-test-$(date +%Y%m%d%H%M%S)"
+STACK_NAME="end-to-end-test-$(date +%Y%m%d%H%M%S)"
 
-echo "# $(date) Starting functional test with stack name: $STACK_NAME"
+echo "# $(date) Starting end-to-end test with stack name: $STACK_NAME"
 
 echo
 echo
