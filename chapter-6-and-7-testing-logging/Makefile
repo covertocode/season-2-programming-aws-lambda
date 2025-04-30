@@ -29,6 +29,16 @@ weather-data:
 functional-test:
 	./functional-test.sh
 
+outputs:
+	@echo "SAM CLI outputs:"
+	sam list stack-outputs --stack-name=chapter-6-and-7-testing-logging
+
+	@echo "CloudFormation outputs:"
+	aws cloudformation describe-stacks \
+		--stack-name chapter-6-and-7-testing-logging \
+		--query "Stacks[].Outputs" \
+		--output table
+
 logs:
 	sam logs --stack-name chapter-6-and-7-testing-logging
 
