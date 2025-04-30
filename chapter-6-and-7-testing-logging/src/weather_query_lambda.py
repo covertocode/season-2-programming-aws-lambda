@@ -3,17 +3,13 @@ import os
 from typing import Any, Dict, List
 
 import boto3
-from aws_lambda_powertools import Logger, Metrics, Tracer
-from aws_lambda_powertools.event_handler import APIGatewayRestResolver
-from aws_lambda_powertools.logging import correlation_paths
+from aws_lambda_powertools import Logger, Metrics
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from weather_event import WeatherEvent
 
-app = APIGatewayRestResolver()
 logger = Logger()
-tracer = Tracer()
 metrics = Metrics(namespace="WeatherData")
 
 dynamodb = boto3.resource("dynamodb")
@@ -22,8 +18,6 @@ table = dynamodb.Table(os.environ["LOCATIONS_TABLE"])
 DEFAULT_LIMIT = 50
 
 
-@app.get("/locations")
-@tracer.capture_method
 def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     try:
         query_params = event.get("queryStringParameters", {}) or {}

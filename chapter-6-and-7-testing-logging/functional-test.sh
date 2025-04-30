@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERIFICATION_RESULT=1
+
 # Define the final statement as a function
 final_statement() {
     # Step 6: Clean up if tests passed
