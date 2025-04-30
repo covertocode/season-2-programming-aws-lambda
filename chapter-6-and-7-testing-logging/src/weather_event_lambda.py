@@ -4,16 +4,24 @@ from typing import Any, Dict
 
 import boto3
 from aws_lambda_powertools import Logger, Metrics, Tracer
+from aws_lambda_powertools.event_handler import APIGatewayRestResolver
+from aws_lambda_powertools.logging import correlation_paths
 from aws_lambda_powertools.metrics import MetricUnit
 from aws_lambda_powertools.utilities.typing import LambdaContext
 
 from weather_event import WeatherEvent
 
+app = APIGatewayRestResolver()
 logger = Logger()
+tracer = Tracer()
+metrics = Metrics(namespace="WeatherData")
+
 dynamodb = boto3.resource("dynamodb")
 table = dynamodb.Table(os.environ["LOCATIONS_TABLE"])
 
 
+@app.get("/events")
+@tracer.capture_method
 def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
     try:
         weather_data = json.loads(event["body"])
@@ -26,9 +34,7 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
             longitude=float(weather_data["longitude"]),
             latitude=float(weather_data["latitude"]),
         )
-        logger.info(f"Created WeatherEvent for location: {weather_event.location_name}")
 
-        logger.debug("Preparing DynamoDB item")
         item = {
             "locationName": weather_event.location_name,
             "temperature": str(weather_event.temperature),
@@ -38,7 +44,6 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
         }
         logger.debug(f"DynamoDB item: {item}")
 
-        logger.info(f"Writing to DynamoDB table: {os.environ['LOCATIONS_TABLE']}")
         table.put_item(Item=item)
         logger.info(
             f"Successfully wrote data for location: {weather_event.location_name}"

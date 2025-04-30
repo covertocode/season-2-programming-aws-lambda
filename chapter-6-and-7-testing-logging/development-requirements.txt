@@ -1,6 +1,7 @@
-requests
+aws_xray_sdk
 black
 flake8
 flake8-pyproject
-pylint
 isort
+pylint
+requests
