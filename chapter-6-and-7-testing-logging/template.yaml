@@ -21,6 +21,18 @@ Resources:
         Name: locationName
         Type: String
 
+  WeatherEventLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${WeatherEventLambda}"
+      RetentionInDays: 1
+
+  WeatherQueryLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${WeatherQueryLambda}"
+      RetentionInDays: 1
+
   WeatherEventLambda:
     Type: AWS::Serverless::Function
     Properties:
