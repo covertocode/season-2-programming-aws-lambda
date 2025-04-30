@@ -43,25 +43,30 @@ def handler(event: Dict[str, Any], context: LambdaContext) -> Dict[str, Any]:
             f"Successfully wrote data for location: {weather_event.location_name}"
         )
 
+        metrics.add_metric(name="SuccessfulEvents", unit=MetricUnit.Count, value=1)
         return {"statusCode": 200, "body": weather_event.location_name}
     except json.JSONDecodeError as e:
         logger.error(f"Failed to parse request body: {str(e)}")
+        metrics.add_metric(name="FailedEvents", unit=MetricUnit.Count, value=1)
         return {
             "statusCode": 400,
             "body": json.dumps({"error": "Invalid JSON in request body"}),
         }
     except KeyError as e:
         logger.error(f"Missing required field in request: {str(e)}")
+        metrics.add_metric(name="FailedEvents", unit=MetricUnit.Count, value=1)
         return {
             "statusCode": 400,
             "body": json.dumps({"error": f"Missing required field: {str(e)}"}),
         }
     except ValueError as e:
         logger.error(f"Invalid data type in request: {str(e)}")
+        metrics.add_metric(name="FailedEvents", unit=MetricUnit.Count, value=1)
         return {
             "statusCode": 400,
             "body": json.dumps({"error": f"Invalid data type: {str(e)}"}),
         }
     except Exception as e:
         logger.exception("Unexpected error processing weather event")
+        metrics.add_metric(name="FailedEvents", unit=MetricUnit.Count, value=1)
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
