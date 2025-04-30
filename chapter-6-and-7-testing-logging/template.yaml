@@ -10,6 +10,9 @@ Globals:
     Environment:
       Variables:
         LOCATIONS_TABLE: !Ref LocationsTable
+        LOG_LEVEL: INFO
+        POWERTOOLS_SERVICE_NAME: WeatherData
+        POWERTOOLS_METRICS_NAMESPACE: WeatherData
   Api:
     OpenApiVersion: '3.0.1'
 
