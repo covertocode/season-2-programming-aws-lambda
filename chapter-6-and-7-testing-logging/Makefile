@@ -40,7 +40,7 @@ outputs:
 	aws cloudformation describe-stacks \
 		--stack-name chapter-6-and-7-testing-logging \
 		--query "Stacks[].Outputs" \
-		--output table
+		--output=json
 
 logs:
 	sam logs --stack-name chapter-6-and-7-testing-logging
