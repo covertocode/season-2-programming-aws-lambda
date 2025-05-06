@@ -6,5 +6,5 @@ API_ENDPOINT=$(aws cloudformation describe-stacks --query "Stacks[?StackName=='$
 
 while :;
 do
-    echo "$(date) $(curl -s ${API_ENDPOINT})";
+    echo "$(date +%T) $(curl -s ${API_ENDPOINT})";
 done
