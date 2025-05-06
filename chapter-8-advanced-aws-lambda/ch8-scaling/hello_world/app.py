@@ -1,9 +1,10 @@
 """
 This is a hello world Lambda function for demonstrating Lambda scaling.
 """
-import uuid
+
 import json
 import time
+import uuid
 
 
 def lambda_handler(event, context):
@@ -15,9 +16,11 @@ def lambda_handler(event, context):
 
     return {
         "statusCode": 200,
-        "body": json.dumps({
-            "message": f"hello world from {request_id}",
-        }),
+        "body": json.dumps(
+            {
+                "message": f"hello world from {request_id}",
+            }
+        ),
     }
 
 
