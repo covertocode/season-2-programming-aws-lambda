@@ -8,11 +8,14 @@ import uuid
 
 
 def lambda_handler(event, context):
+    """
+    Lambda function handler.
+    """
     # create a UUID for the request
     request_id = str(uuid.uuid4())
 
-    # sleep for 5000 seconds
-    time.sleep(5000)
+    # sleep for 5 seconds
+    time.sleep(2)
 
     return {
         "statusCode": 200,
