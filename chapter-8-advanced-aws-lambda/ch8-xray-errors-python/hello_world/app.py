@@ -26,7 +26,7 @@ def hello():
         return {"error": "Internal Server Error; Check X-Ray trace for more details"}
     else:
         logger.info("Hello world API - HTTP 200")
-        return {"message": "🐍: Hello, World!"}
+        return {"message": "Request processed successfully."}
 
 # Enrich logging with contextual information from Lambda
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
