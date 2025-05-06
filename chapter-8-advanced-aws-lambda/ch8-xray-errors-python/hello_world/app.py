@@ -5,6 +5,7 @@ from aws_lambda_powertools import Logger
 from aws_lambda_powertools import Tracer
 from aws_lambda_powertools import Metrics
 from aws_lambda_powertools.metrics import MetricUnit
+import json
 
 app = APIGatewayRestResolver()
 tracer = Tracer()
@@ -15,18 +16,25 @@ metrics = Metrics(namespace="Chapter8")
 @tracer.capture_method
 def hello():
     # adding custom metrics
-    # See: https://awslabs.github.io/aws-lambda-powertools-python/latest/core/metrics/
     metrics.add_metric(name="PythonHelloWorldInvocations", unit=MetricUnit.Count, value=1)
 
-    # structured log
-    # See: https://awslabs.github.io/aws-lambda-powertools-python/latest/core/logger/
-    import random
-    if random.choice([True, False]):
-        logger.error("Hello world API - HTTP 500")
-        return {"statusCode": 500, "error": "Internal Server Error; Check X-Ray trace for more details"}
-    else:
+    try:
+        # Randomly inject an error
+        import random
+        if random.choice([True, False]):
+            raise Exception("Error mode selected")
+
         logger.info("Hello world API - HTTP 200")
-        return {"statusCode": 200, "message": "Request processed successfully."}
+        return {
+            "statusCode": 200,
+            "body": json.dumps({"message": "Request processed successfully."})
+        }
+    except Exception as e:
+        logger.error(f"Hello world API - HTTP 500: {str(e)}")
+        return {
+            "statusCode": 500,
+            "body": json.dumps({"error": f"Internal Server Error: {str(e)}"})
+        }
 
 # Enrich logging with contextual information from Lambda
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
