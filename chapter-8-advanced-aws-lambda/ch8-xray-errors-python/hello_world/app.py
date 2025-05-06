@@ -38,10 +38,7 @@ def hello():
         #    "statusCode": 500,
         #    "error": f"Internal Server Error: {str(e)}"
         #}
-        app.response_builder(
-            status_code=500,
-            body=json.dumps({"error": f"Internal Server Error: {str(e)}"})
-        )
+        app.this_fake_method_causes_500_error()
 
 # Enrich logging with contextual information from Lambda
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
