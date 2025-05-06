@@ -23,10 +23,10 @@ def hello():
     import random
     if random.choice([True, False]):
         logger.error("Hello world API - HTTP 500")
-        return {"error": "Internal Server Error; Check X-Ray trace for more details"}
+        return {"statusCode": 500, "error": "Internal Server Error; Check X-Ray trace for more details"}
     else:
         logger.info("Hello world API - HTTP 200")
-        return {"message": "Request processed successfully."}
+        return {"statusCode": 200, "message": "Request processed successfully."}
 
 # Enrich logging with contextual information from Lambda
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
