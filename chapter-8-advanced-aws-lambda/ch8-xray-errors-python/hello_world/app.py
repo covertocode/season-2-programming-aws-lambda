@@ -38,7 +38,7 @@ def hello():
         #    "statusCode": 500,
         #    "error": f"Internal Server Error: {str(e)}"
         #}
-        app.raise_response(
+        app.response_builder(
             status_code=500,
             body=json.dumps({"error": f"Internal Server Error: {str(e)}"})
         )
