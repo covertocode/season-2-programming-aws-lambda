@@ -15,6 +15,6 @@ public class AppTest {
     assertEquals("application/json", result.getHeaders().get("Content-Type"));
     String content = result.getBody();
     assertNotNull(content);
-    assertTrue(content.contains("\"UUID\""));
+    assertTrue(content.contains("\"ID\""));
   }
 }

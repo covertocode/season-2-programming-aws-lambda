@@ -18,7 +18,7 @@ def lambda_handler(event, context):
         "statusCode": 200,
         "body": json.dumps(
             {
-                "message": f"hello world from {request_id}",
+                "ID": f"Python {request_id[-2:]}",
             }
         ),
     }
