@@ -34,14 +34,14 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
             return response
                     .withStatusCode(200)
                     .withBody(output);
-        } catch (IOException e) {
+        } catch (InterruptedException e) {
             return response
                     .withBody("{}")
                     .withStatusCode(500);
         }
     }
 
-    private String getPageContents(String address) throws IOException{
+    private String getPageContents(String address) throws IOException, InterruptedException {
         Thread.sleep(5000);
         URL url = new URL(address);
         try(BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
