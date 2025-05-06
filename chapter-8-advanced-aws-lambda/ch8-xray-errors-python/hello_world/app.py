@@ -31,11 +31,17 @@ def hello():
             "message": "Request processed successfully."
         }
     except Exception as e:
+        # https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-errors.html
         logger.error(f"Hello world API - HTTP 500: {str(e)}")
-        return {
-            "statusCode": 500,
-            "error": f"Internal Server Error: {str(e)}"
-        }
+        # Instead of using `return`, The raise_response method from the APIGatewayRestResolver class will properly signal to API Gateway that this is an error response with the appropriate status code.
+        #return {
+        #    "statusCode": 500,
+        #    "error": f"Internal Server Error: {str(e)}"
+        #}
+        app.raise_response(
+            status_code=500,
+            body=json.dumps({"error": f"Internal Server Error: {str(e)}"})
+        )
 
 # Enrich logging with contextual information from Lambda
 @logger.inject_lambda_context(correlation_id_path=correlation_paths.API_GATEWAY_REST)
