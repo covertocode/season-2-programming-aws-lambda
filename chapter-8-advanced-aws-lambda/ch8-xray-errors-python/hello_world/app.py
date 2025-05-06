@@ -15,7 +15,7 @@ metrics = Metrics(namespace="Chapter8")
 @app.get("/hello")
 @tracer.capture_method
 def hello():
-    # adding custom metrics
+    # See: https://awslabs.github.io/aws-lambda-powertools-python/latest/core/metrics/
     metrics.add_metric(name="PythonHelloWorldInvocations", unit=MetricUnit.Count, value=1)
 
     try:
@@ -24,16 +24,17 @@ def hello():
         if random.choice([True, False]):
             raise Exception("Error mode selected")
 
+        # See: https://awslabs.github.io/aws-lambda-powertools-python/latest/core/logger/
         logger.info("Hello world API - HTTP 200")
         return {
             "statusCode": 200,
-            "body": json.dumps({"message": "Request processed successfully."})
+            "body": {"message": "Request processed successfully."}
         }
     except Exception as e:
         logger.error(f"Hello world API - HTTP 500: {str(e)}")
         return {
             "statusCode": 500,
-            "body": json.dumps({"error": f"Internal Server Error: {str(e)}"})
+            "body": {"error": f"Internal Server Error: {str(e)}"}
         }
 
 # Enrich logging with contextual information from Lambda
