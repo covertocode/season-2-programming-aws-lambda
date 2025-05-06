@@ -1,8 +1,9 @@
 STACK_NAME = ch8-scaling
+SOURCE_DIR = hello_world
 TARGETS = all requirements test
 
 $(TARGETS):
-	$(MAKE) -C src $@
+	$(MAKE) -C $(SOURCE_DIR) $@
 
 development-requirements:
 	pip install -q -U pip
