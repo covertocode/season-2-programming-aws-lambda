@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Description: |
-  ch8-scaling-java
-  Sample SAM Template for ch8-scaling-java
+  ch8-scaling-java-sleep
+  Sample SAM Template for ch8-scaling-java-sleep
 
 Transform: AWS::Serverless-2016-10-31
 

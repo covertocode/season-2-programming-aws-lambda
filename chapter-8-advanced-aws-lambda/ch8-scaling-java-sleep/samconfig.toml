@@ -3,7 +3,9 @@
 version = 0.1
 
 [default.global.parameters]
-stack_name = "ch8-scaling-java"
+stack_name = "ch8-scaling-java-sleep"
+region = "us-west-2"
+image_repositories = []
 
 [default.build.parameters]
 cached = true
@@ -16,9 +18,6 @@ lint = true
 capabilities = "CAPABILITY_IAM"
 confirm_changeset = true
 resolve_s3 = true
-s3_prefix = "ch8-scaling-java"
-region = "us-west-2"
-image_repositories = []
 
 [default.package.parameters]
 resolve_s3 = true
