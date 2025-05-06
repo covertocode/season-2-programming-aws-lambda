@@ -29,7 +29,7 @@ public class App implements RequestHandler<APIGatewayProxyRequestEvent, APIGatew
                 .withHeaders(headers);
         try {
             Thread.sleep(10);
-            String output = String.format("{ \"UUID\": \"%s\" }", instanceID);
+            String output = String.format("{ \"UUID\": \"%s\" }", instanceID.substring(instanceID.length() - 2));
 
             return response
                     .withStatusCode(200)
