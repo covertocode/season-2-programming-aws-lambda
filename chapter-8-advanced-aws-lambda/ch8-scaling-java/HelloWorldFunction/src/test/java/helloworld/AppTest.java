@@ -17,6 +17,6 @@ public class AppTest {
     assertNotNull(content);
     assertTrue(content.contains("\"message\""));
     assertTrue(content.contains("\"hello world\""));
-    assertTrue(content.contains("\"location\""));
+    assertTrue(content.contains("\"UUID\""));
   }
 }
