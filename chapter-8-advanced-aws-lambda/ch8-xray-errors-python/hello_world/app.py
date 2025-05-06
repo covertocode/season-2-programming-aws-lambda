@@ -28,13 +28,13 @@ def hello():
         logger.info("Hello world API - HTTP 200")
         return {
             "statusCode": 200,
-            "body": {"message": "Request processed successfully."}
+            "message": "Request processed successfully."
         }
     except Exception as e:
         logger.error(f"Hello world API - HTTP 500: {str(e)}")
         return {
             "statusCode": 500,
-            "body": {"error": f"Internal Server Error: {str(e)}"}
+            "error": f"Internal Server Error: {str(e)}"
         }
 
 # Enrich logging with contextual information from Lambda
