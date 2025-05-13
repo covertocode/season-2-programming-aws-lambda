@@ -25,7 +25,7 @@ Resources:
         CloudWatchEvent:
           Type: Schedule
           Properties:
-            Schedule: cron(0 * * * ? *)
+            Schedule: cron(0/5 * * * ? *)
       MemorySize: 128
       Timeout: 100
 # # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
