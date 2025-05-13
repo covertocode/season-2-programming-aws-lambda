@@ -1,87 +1,93 @@
-# SAM Multi-Region Build and Deploy Guide
+# Multi-Region SAM Deployment Guide
 
-This guide explains how to build and deploy Lambda functions to work with your DynamoDB Global Table across multiple regions.
+This guide will help you set up and deploy SAM applications to multiple AWS regions.
 
-## Project Structure
+## Understanding the Error
 
-Before building, ensure your project has this structure:
-
+The error message:
 ```
-project-root/
-├── writer-template.yaml        # SAM template for the writer function
-├── reader-template.yaml        # SAM template for the reader functions
-├── functions/
-│   ├── writer/
-│   │   └── app.py              # Writer Lambda code
-│   └── reader/
-│       └── app.py              # Reader Lambda code
-├── build.sh                    # Optional build script
-└── deploy.sh                   # Optional deployment script
+Error: Stack aws-sam-cli-managed-default is missing Tags and/or Outputs information and therefore not in a healthy state (Current state:REVIEW_IN_PROGRESS). Failing as the stack was likely not created by the AWS SAM CLI
 ```
 
-## Build Process
+This occurs because:
+- SAM CLI creates a managed CloudFormation stack in each region to store deployment artifacts
+- You've only set up this stack in us-west-2, but are trying to deploy to other regions
+- Each region needs its own "bootstrap" stack before deployment
 
-### Option 1: Using the terminal directly
+## Step 1: Bootstrapping All Required Regions
+
+### Option 1: Using the bootstrap script
+
+1. Save the provided bootstrap script
+2. Make it executable: `chmod +x bootstrap-script.sh`
+3. Run it: `./bootstrap-script.sh`
+
+### Option 2: Manual bootstrap
+
+Run the bootstrap command manually for each region:
 
 ```bash
-# Navigate to your project root
-cd your-project-directory
+# Bootstrap us-east-1 (writer region)
+sam bootstrap --region us-east-1 --no-interactive
 
-# Build both templates
+# Bootstrap other reader regions
+sam bootstrap --region us-east-2 --no-interactive
+sam bootstrap --region us-west-1 --no-interactive
+# (us-west-2 is already set up)
+```
+
+## Step 2: Build Your SAM Templates (Once)
+
+After bootstrapping all regions, build your templates:
+
+```bash
 sam build --template-file writer-template.yaml
 sam build --template-file reader-template.yaml
 ```
 
-### Option 2: Using the build script
+## Step 3: Deploy to Each Region
+
+Now deploy to each bootstrapped region:
 
 ```bash
-# Make the script executable
-chmod +x build.sh
+# Deploy writer to us-east-1
+sam deploy --template-file writer-template.yaml \
+  --stack-name global-table-writer \
+  --region us-east-1 \
+  --parameter-overrides GlobalTableName=my-global-table \
+  --capabilities CAPABILITY_IAM
 
-# Run the build script
-./build.sh
+# Deploy readers to other regions
+sam deploy --template-file reader-template.yaml \
+  --stack-name global-table-reader-east2 \
+  --region us-east-2 \
+  --parameter-overrides GlobalTableName=my-global-table \
+  --capabilities CAPABILITY_IAM
+
+# Repeat for other regions
 ```
 
-## What happens during `sam build`
+## Additional Notes
 
-The `sam build` command:
+1. **S3 Buckets**:
+   - The bootstrap process creates an S3 bucket in each region to store deployment artifacts
+   - Format: `aws-sam-cli-managed-default-samclisourcebucket-<hash>`
 
-1. Creates a `.aws-sam` directory in your project root
-2. Resolves dependencies for your Lambda functions
-3. Copies your code and dependencies into the build directory
-4. Prepares the package for deployment
+2. **One-time Setup**:
+   - Bootstrapping only needs to be done once per region
+   - Future deployments can reuse the same bootstrap resources
 
-For Python functions, SAM will:
-- Create a virtual environment
-- Install dependencies from requirements.txt (if present)
-- Package the code and dependencies
+3. **AWS Credentials**:
+   - Ensure your AWS credentials have permissions in all target regions
+   - If using profiles, specify with `--profile` in the commands
 
-## Important Notes About Multi-Region Builds
-
-1. **Build Once, Deploy Many**: 
-   - You only need to build once, even when deploying to multiple regions
-   - The same build artifacts can be deployed to any region
-
-2. **Template Parameters**:
-   - The templates use `!Ref AWS::Region` to get the deployment region
-   - This ensures each function connects to the proper regional DynamoDB endpoint
-
-3. **Requirements File** (Optional):
-   If your functions have dependencies, add a requirements.txt file:
-   ```
-   # functions/writer/requirements.txt or functions/reader/requirements.txt
-   boto3==1.26.0
-   ```
-
-4. **Next Steps**:
-   After building, use the deploy script or manual commands to deploy to each region:
+4. **Clean Up**:
+   - When no longer needed, you can remove the bootstrap resources:
    ```bash
-   # Example for one region
-   sam deploy --template-file writer-template.yaml --stack-name global-table-writer --region us-east-1 --parameter-overrides GlobalTableName=my-global-table --capabilities CAPABILITY_IAM
+   sam delete --stack-name aws-sam-cli-managed-default --region <region-name>
    ```
 
-## Troubleshooting
-
-- If you get errors about missing modules, check that your build completed successfully
-- Look in `.aws-sam/build` to confirm your code and dependencies were packaged correctly
-- For permission errors, make sure you have the necessary AWS credentials configured
+5. **Troubleshooting Failed Bootstrap**:
+   - If a bootstrap attempt fails, go to the CloudFormation console in that region
+   - Delete any failed `aws-sam-cli-managed-default` stack
+   - Try the bootstrap command again

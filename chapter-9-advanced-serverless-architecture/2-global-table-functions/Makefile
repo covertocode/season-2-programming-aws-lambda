@@ -1,5 +1,8 @@
 all: build deploy
 
+bootstrap:
+	./bootstrap.sh
+
 build:
 	./build.sh
 
