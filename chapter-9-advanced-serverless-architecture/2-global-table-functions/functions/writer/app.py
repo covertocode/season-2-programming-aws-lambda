@@ -22,17 +22,17 @@ def lambda_handler(event, context):
     try:
         # Get current timestamp
         timestamp = datetime.datetime.utcnow().isoformat()
-        
+
         # Extract method and path from event
         request_context = event.get('requestContext', {})
         http_method = request_context.get('http', {}).get('method', 'UNKNOWN')
         path = request_context.get('http', {}).get('path', 'UNKNOWN')
         source_ip = request_context.get('http', {}).get('sourceIp', 'UNKNOWN')
-        
+
         # Get basic context information
         request_id = context.aws_request_id
         function_name = context.function_name
-        
+
         # Create item to write to DynamoDB
         item = {
             'id': DEFAULT_ID,
@@ -43,12 +43,12 @@ def lambda_handler(event, context):
             'request_path': path,
             'source_ip': source_ip,
             'function_name': function_name,
-            'event_data': json.dumps(event, default=str)
+            #'event_data': json.dumps(event, default=str)
         }
-        
+
         # Write the item to DynamoDB with the default ID
         response = table.put_item(Item=item)
-        
+
         # Return a success response
         return {
             'statusCode': 200,
@@ -63,7 +63,7 @@ def lambda_handler(event, context):
                 'requestId': request_id
             })
         }
-    
+
     except Exception as e:
         print(f"Error: {str(e)}")
         return {
