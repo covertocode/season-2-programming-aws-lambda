@@ -1,0 +1,39 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sample SAM Template for DynamoDB Global Table
+
+Resources:
+  MyGlobalTable:
+    Type: AWS::DynamoDB::GlobalTable
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: id
+          KeyType: HASH
+      Replicas:
+        - Region: us-east-1
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: true
+        - Region: us-west-1
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: true
+        - Region: us-east-2
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: true
+        - Region: us-west-2
+          PointInTimeRecoverySpecification:
+            PointInTimeRecoveryEnabled: true
+      StreamSpecification:
+        StreamViewType: NEW_AND_OLD_IMAGES
+      TableName: global-table-demo
+
+Outputs:
+  GlobalTableName:
+    Description: Name of the DynamoDB Global Table
+    Value: !Ref MyGlobalTable
+  PrimaryRegionTableArn:
+    Description: ARN of the table in the primary region
+    Value: !GetAtt MyGlobalTable.Arn
