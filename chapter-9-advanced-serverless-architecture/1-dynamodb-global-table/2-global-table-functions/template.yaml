@@ -1,0 +1,126 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Lambda functions working with a DynamoDB Global Table
+
+Parameters:
+  GlobalTableName:
+    Type: String
+    Default: global-table-demo
+    Description: Name of the existing DynamoDB Global Table
+
+Resources:
+  # IAM Role for Lambda Functions with DynamoDB Access
+  LambdaDynamoDBRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource: !Sub 'arn:aws:dynamodb:*:${AWS::AccountId}:table/${GlobalTableName}'
+
+  # Writer Lambda Function in us-east-1
+  WriterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: global-table-writer
+      CodeUri: ./functions/writer/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: us-east-1
+      Tags:
+        Function: Writer
+        Region: us-east-1
+
+  # Reader Lambda Functions in other regions
+  ReaderFunctionEast2:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: global-table-reader-east2
+      CodeUri: ./functions/reader/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: us-east-2
+      Tags:
+        Function: Reader
+        Region: us-east-2
+
+  ReaderFunctionWest1:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: global-table-reader-west1
+      CodeUri: ./functions/reader/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: us-west-1
+      Tags:
+        Function: Reader
+        Region: us-west-1
+
+  ReaderFunctionWest2:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: global-table-reader-west2
+      CodeUri: ./functions/reader/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: us-west-2
+      Tags:
+        Function: Reader
+        Region: us-west-2
+
+Outputs:
+  WriterFunction:
+    Description: Writer Lambda Function ARN
+    Value: !GetAtt WriterFunction.Arn
+  ReaderFunctionEast2:
+    Description: Reader Lambda Function ARN (us-east-2)
+    Value: !GetAtt ReaderFunctionEast2.Arn
+  ReaderFunctionWest1:
+    Description: Reader Lambda Function ARN (us-west-1)
+    Value: !GetAtt ReaderFunctionWest1.Arn
+  ReaderFunctionWest2:
+    Description: Reader Lambda Function ARN (us-west-2)
+    Value: !GetAtt ReaderFunctionWest2.Arn
