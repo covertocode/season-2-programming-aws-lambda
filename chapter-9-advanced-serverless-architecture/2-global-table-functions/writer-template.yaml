@@ -1,0 +1,69 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Writer Lambda function in us-east-1
+
+Parameters:
+  GlobalTableName:
+    Type: String
+    Default: my-global-table
+    Description: Name of the existing DynamoDB Global Table
+  FunctionNameSuffix:
+    Type: String
+    Default: writer
+    Description: Suffix for the Lambda function name
+  
+Resources:
+  # IAM Role for Lambda Function with DynamoDB Access
+  LambdaDynamoDBRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                  - dynamodb:UpdateItem
+                  - dynamodb:DeleteItem
+                Resource: !Sub 'arn:aws:dynamodb:*:${AWS::AccountId}:table/${GlobalTableName}'
+
+  # Writer Lambda Function
+  WriterFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'global-table-${FunctionNameSuffix}'
+      CodeUri: ./functions/writer/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: !Ref AWS::Region
+      Tags:
+        Function: Writer
+        Region: !Ref AWS::Region
+
+Outputs:
+  WriterFunction:
+    Description: Writer Lambda Function ARN
+    Value: !GetAtt WriterFunction.Arn
+  WriterFunctionRegion:
+    Description: Region where the writer function is deployed
+    Value: !Ref AWS::Region

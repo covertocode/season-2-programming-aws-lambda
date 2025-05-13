@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: SAM Template for Reader Lambda function
+
+Parameters:
+  GlobalTableName:
+    Type: String
+    Default: my-global-table
+    Description: Name of the existing DynamoDB Global Table
+  FunctionNameSuffix:
+    Type: String
+    Default: reader
+    Description: Suffix for the Lambda function name
+  
+Resources:
+  # IAM Role for Lambda Function with DynamoDB Access
+  LambdaDynamoDBRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: DynamoDBAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:Query
+                  - dynamodb:Scan
+                Resource: !Sub 'arn:aws:dynamodb:*:${AWS::AccountId}:table/${GlobalTableName}'
+
+  # Reader Lambda Function
+  ReaderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub 'global-table-${FunctionNameSuffix}-${AWS::Region}'
+      CodeUri: ./functions/reader/
+      Handler: app.lambda_handler
+      Runtime: python3.9
+      Timeout: 30
+      MemorySize: 128
+      Role: !GetAtt LambdaDynamoDBRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref GlobalTableName
+          REGION: !Ref AWS::Region
+      Tags:
+        Function: Reader
+        Region: !Ref AWS::Region
+
+Outputs:
+  ReaderFunction:
+    Description: Reader Lambda Function ARN
+    Value: !GetAtt ReaderFunction.Arn
+  ReaderFunctionRegion:
+    Description: Region where the reader function is deployed
+    Value: !Ref AWS::Region
