@@ -1,98 +1,87 @@
-# Deployment Guide for Lambda Functions with DynamoDB Global Table
+# SAM Multi-Region Build and Deploy Guide
 
-This guide provides instructions for deploying Lambda functions across different regions that work with your existing DynamoDB Global Table.
-
-## Prerequisites
-
-1. An AWS account with CLI access configured
-2. AWS SAM CLI installed (https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html)
-3. The DynamoDB Global Table (`global-table-demo`) already deployed
-4. Python 3.9+ installed
+This guide explains how to build and deploy Lambda functions to work with your DynamoDB Global Table across multiple regions.
 
 ## Project Structure
 
-Create the following directory structure:
+Before building, ensure your project has this structure:
 
 ```
-.
-├── template.yaml           # SAM template
-├── functions
-│   ├── writer
-│   │   └── app.py          # Writer Lambda function code
-│   └── reader
-│       └── app.py          # Reader Lambda function code
+project-root/
+├── writer-template.yaml        # SAM template for the writer function
+├── reader-template.yaml        # SAM template for the reader functions
+├── functions/
+│   ├── writer/
+│   │   └── app.py              # Writer Lambda code
+│   └── reader/
+│       └── app.py              # Reader Lambda code
+├── build.sh                    # Optional build script
+└── deploy.sh                   # Optional deployment script
 ```
 
-## Deployment Steps
+## Build Process
 
-1. **Create Function Directories**
+### Option 1: Using the terminal directly
 
+```bash
+# Navigate to your project root
+cd your-project-directory
+
+# Build both templates
+sam build --template-file writer-template.yaml
+sam build --template-file reader-template.yaml
+```
+
+### Option 2: Using the build script
+
+```bash
+# Make the script executable
+chmod +x build.sh
+
+# Run the build script
+./build.sh
+```
+
+## What happens during `sam build`
+
+The `sam build` command:
+
+1. Creates a `.aws-sam` directory in your project root
+2. Resolves dependencies for your Lambda functions
+3. Copies your code and dependencies into the build directory
+4. Prepares the package for deployment
+
+For Python functions, SAM will:
+- Create a virtual environment
+- Install dependencies from requirements.txt (if present)
+- Package the code and dependencies
+
+## Important Notes About Multi-Region Builds
+
+1. **Build Once, Deploy Many**: 
+   - You only need to build once, even when deploying to multiple regions
+   - The same build artifacts can be deployed to any region
+
+2. **Template Parameters**:
+   - The templates use `!Ref AWS::Region` to get the deployment region
+   - This ensures each function connects to the proper regional DynamoDB endpoint
+
+3. **Requirements File** (Optional):
+   If your functions have dependencies, add a requirements.txt file:
+   ```
+   # functions/writer/requirements.txt or functions/reader/requirements.txt
+   boto3==1.26.0
+   ```
+
+4. **Next Steps**:
+   After building, use the deploy script or manual commands to deploy to each region:
    ```bash
-   mkdir -p functions/writer functions/reader
+   # Example for one region
+   sam deploy --template-file writer-template.yaml --stack-name global-table-writer --region us-east-1 --parameter-overrides GlobalTableName=my-global-table --capabilities CAPABILITY_IAM
    ```
 
-2. **Copy the Lambda Function Code**
+## Troubleshooting
 
-   Copy the writer function code to `functions/writer/app.py` and the reader function code to `functions/reader/app.py`
-
-3. **Deploy with SAM**
-
-   ```bash
-   sam build
-   sam deploy --guided
-   ```
-
-   During guided deployment, you'll be prompted for:
-   - Stack name (e.g., `lambda-global-table-stack`)
-   - AWS Region (deploy to `us-east-1` first)
-   - Parameters:
-     - `GlobalTableName`: Enter your Global Table name (default: `global-table-demo`)
-   - Confirm changes and deploy
-
-4. **Testing**
-
-   Test the Writer Lambda function (us-east-1):
-   ```json
-   {
-     "item_data": {
-       "message": "Hello from us-east-1",
-       "timestamp_local": "2025-05-13T10:00:00"
-     }
-   }
-   ```
-
-   Test a Reader Lambda function (any other region):
-   ```json
-   {
-     "operation": "scan",
-     "limit": 10
-   }
-   ```
-
-   or to get a specific item:
-   ```json
-   {
-     "operation": "get",
-     "id": "[ID_FROM_WRITER_RESPONSE]"
-   }
-   ```
-
-## Important Notes
-
-1. **Regional Deployment**
-   While the template includes all Lambda functions, each function should ideally be deployed in its specific region. For a production setup, consider creating separate regional templates.
-
-2. **Cross-Region IAM Roles**
-   This template uses a single IAM role for simplicity. In a production environment, you might want to create region-specific roles.
-
-3. **Lambda Environment Variables**
-   Each Lambda knows which region it should connect to through the `REGION` environment variable.
-
-4. **Replication Latency**
-   DynamoDB Global Tables typically have replication latency under 1 second, but allow for potential delays when reading immediately after writing.
-
-5. **Cost Optimization**
-   The template uses minimal settings. For production, optimize memory, timeout, and consider using provisioned concurrency if needed.
-
-6. **Monitoring**
-   Consider adding CloudWatch Alarms and X-Ray tracing for production monitoring.
+- If you get errors about missing modules, check that your build completed successfully
+- Look in `.aws-sam/build` to confirm your code and dependencies were packaged correctly
+- For permission errors, make sure you have the necessary AWS credentials configured

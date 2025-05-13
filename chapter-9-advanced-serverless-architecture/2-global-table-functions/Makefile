@@ -1,7 +1,7 @@
 all: build deploy
 
 build:
-	sam build
+	./build.sh
 
 deploy:
 	./deploy.sh
