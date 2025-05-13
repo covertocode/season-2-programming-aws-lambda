@@ -56,14 +56,22 @@ Resources:
         Variables:
           TABLE_NAME: !Ref GlobalTableName
           REGION: !Ref AWS::Region
+          DEFAULT_ID: "default-item-id"
       Tags:
         Function: Writer
         Region: !Ref AWS::Region
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - '*'
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - content-type
 
 Outputs:
-  WriterFunction:
-    Description: Writer Lambda Function ARN
-    Value: !GetAtt WriterFunction.Arn
-  WriterFunctionRegion:
-    Description: Region where the writer function is deployed
-    Value: !Ref AWS::Region
+  WriterFunctionUrl:
+    Description: URL for invoking the writer function
+    Value: !GetAtt WriterFunctionUrl.FunctionUrl

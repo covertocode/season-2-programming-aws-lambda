@@ -53,14 +53,22 @@ Resources:
         Variables:
           TABLE_NAME: !Ref GlobalTableName
           REGION: !Ref AWS::Region
+          DEFAULT_ID: "default-item-id"
       Tags:
         Function: Reader
         Region: !Ref AWS::Region
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins:
+            - '*'
+          AllowMethods:
+            - GET
+            - POST
+          AllowHeaders:
+            - content-type
 
 Outputs:
-  ReaderFunction:
-    Description: Reader Lambda Function ARN
-    Value: !GetAtt ReaderFunction.Arn
-  ReaderFunctionRegion:
-    Description: Region where the reader function is deployed
-    Value: !Ref AWS::Region
+  ReaderFunctionUrl:
+    Description: URL for invoking the reader function
+    Value: !GetAtt ReaderFunctionUrl.FunctionUrl
