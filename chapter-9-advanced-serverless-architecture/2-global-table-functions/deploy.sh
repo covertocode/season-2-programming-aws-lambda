@@ -22,7 +22,7 @@ sam deploy --resolve-s3 \
 echo "# $(date) Deploying reader function to us-east-2..."
 sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
-  --stack-name global-table-reader-east2 \
+  --stack-name global-table-reader-us-east-2 \
   --region us-east-2 \
   --parameter-overrides \
     GlobalTableName=$GLOBAL_TABLE_NAME \
@@ -32,7 +32,7 @@ sam deploy --resolve-s3 \
 echo "# $(date) Deploying reader function to us-west-1..."
 sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
-  --stack-name global-table-reader-west1 \
+  --stack-name global-table-reader-us-west-1 \
   --region us-west-1 \
   --parameter-overrides \
     GlobalTableName=$GLOBAL_TABLE_NAME \
@@ -42,7 +42,7 @@ sam deploy --resolve-s3 \
 echo "# $(date) Deploying reader function to us-west-2..."
 sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
-  --stack-name global-table-reader-west2 \
+  --stack-name global-table-reader-us-west-2 \
   --region us-west-2 \
   --parameter-overrides \
     GlobalTableName=$GLOBAL_TABLE_NAME \

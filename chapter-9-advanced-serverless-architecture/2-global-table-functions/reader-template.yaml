@@ -5,7 +5,7 @@ Description: SAM Template for Reader Lambda function
 Parameters:
   GlobalTableName:
     Type: String
-    Default: my-global-table
+    Default: global-table-demo
     Description: Name of the existing DynamoDB Global Table
   FunctionNameSuffix:
     Type: String
