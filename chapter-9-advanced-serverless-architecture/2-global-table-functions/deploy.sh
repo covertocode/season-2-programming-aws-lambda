@@ -9,7 +9,7 @@ READER_TEMPLATE="reader-template.yaml"
 
 # Deploy writer function to us-east-1
 echo "# $(date) Deploying writer function to us-east-1..."
-sam deploy \
+sam deploy --resolve-s3 \
   --template-file $WRITER_TEMPLATE \
   --stack-name global-table-writer \
   --region us-east-1 \
@@ -20,7 +20,7 @@ sam deploy \
 
 # Deploy reader functions to their respective regions
 echo "# $(date) Deploying reader function to us-east-2..."
-sam deploy \
+sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
   --stack-name global-table-reader-east2 \
   --region us-east-2 \
@@ -30,7 +30,7 @@ sam deploy \
   --capabilities CAPABILITY_IAM
 
 echo "# $(date) Deploying reader function to us-west-1..."
-sam deploy \
+sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
   --stack-name global-table-reader-west1 \
   --region us-west-1 \
@@ -40,7 +40,7 @@ sam deploy \
   --capabilities CAPABILITY_IAM
 
 echo "# $(date) Deploying reader function to us-west-2..."
-sam deploy \
+sam deploy --resolve-s3 \
   --template-file $READER_TEMPLATE \
   --stack-name global-table-reader-west2 \
   --region us-west-2 \
