@@ -1,5 +1,6 @@
 #!/bin/bash
 # Script to deploy Lambda functions across multiple regions
+set -e
 
 # Configuration
 GLOBAL_TABLE_NAME="global-table-demo"  # Replace with your table name
