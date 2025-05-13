@@ -12,12 +12,12 @@ fi
 WRITE_ENDPOINT=$(aws cloudformation describe-stacks --region=us-east-1 --query "Stacks[?StackName=='global-table-writer'][].Outputs[?OutputKey=='WriterFunctionUrl'].OutputValue" --output text)
 
 echo "# $(date) Writing to the table..."
-curl -s ${WRITE_ENDPOINT}
+curl -s ${WRITE_ENDPOINT} | jq .
 
 for region in us-east-2 us-west-1 us-west-2;
 do
     READ_ENDPOINT=$(aws cloudformation describe-stacks --region=${region} --query "Stacks[?StackName=='global-table-reader-${region}'][].Outputs[?OutputKey=='ReaderFunctionUrl'].OutputValue" --output text)
 
     echo "# $(date) ${region} Reading from the table..."
-    curl -s ${READ_ENDPOINT} | jq
+    curl -s ${READ_ENDPOINT} | jq .
 done
