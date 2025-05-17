@@ -5,7 +5,7 @@
 2. Use these steps to set up the environment:
 
    ```bash
-   sudo yum install git
+   sudo yum install -y git
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
    # (copy and paste the shell configuration into shell-setup.sh)
