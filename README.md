@@ -1,8 +1,6 @@
 # Season 2: Programming AWS Lambda
 
-1. Use the CloudFormation template to create a server: [lab-server-cloudformation.yml](./lab-server-cloudformation.yml)
-1. Connect to the server (Details coming soon!)
-2. Use these steps to set up the environment:
+1. Use these steps to set up a development environment on a RHEL/Yum based system (like Amazon Linux 2023) for Java 21 and AWS Lambda:
 
    ```bash
    sudo yum install git
