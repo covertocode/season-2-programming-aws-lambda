@@ -3,7 +3,7 @@
 1. Use these steps to set up a development environment on a RHEL/Yum based system (like Amazon Linux 2023) for Java 21 and AWS Lambda:
 
    ```bash
-   sudo yum install git
+   sudo yum install -y git
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
    # (copy and paste the shell configuration into shell-setup.sh)
